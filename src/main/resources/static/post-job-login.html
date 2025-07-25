@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Post Job Login</title>
+</head>
+<body>
+  <h2>Admin Login - Post a Job</h2>
+  <form id="postJobLoginForm">
+    <label>Password: <input type="password" id="postJobPassword" required></label>
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="loginError" style="color:red;"></p>
+
+  <script>
+    document.getElementById('postJobLoginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const password = document.getElementById('postJobPassword').value;
+
+      fetch('http://localhost:8080/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          localStorage.setItem('adminAuthenticated', 'true');
+          window.location.href = 'post-job.html';
+        } else {
+          document.getElementById('loginError').innerText = 'Invalid password';
+        }
+      })
+      .catch(err => {
+        console.error('Login error:', err);
+        document.getElementById('loginError').innerText = 'Server error';
+      });
+    });
+  </script>
+
+</body>
+</html>
