@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Care Reminders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f8f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2e7d32;
+        }
+        .section {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background: #a5d6a7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🌱 Plant Care Reminders</h1>
+
+    <div class="section">
+        <h2>Today's Care Logs</h2>
+        <table id="todayTable">
+            <thead>
+                <tr>
+                    <th>Plant Name</th>
+                    <th>Care Date</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>All Care Logs</h2>
+        <table id="allTable">
+            <thead>
+                <tr>
+                    <th>Plant Name</th>
+                    <th>Care Date</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiBase = "http://localhost:8080/api/carelogs";
+
+        async function loadTodayLogs() {
+            const res = await fetch(`${apiBase}/today`);
+            const logs = await res.json();
+            const tbody = document.querySelector("#todayTable tbody");
+            tbody.innerHTML = "";
+            logs.forEach(log => {
+                const row = `<tr>
+                    <td>${log.plantName || 'N/A'}</td>
+                    <td>${log.careDate}</td>
+                    <td>${log.notes || ''}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        async function loadAllLogs() {
+            const res = await fetch(apiBase);
+            const logs = await res.json();
+            const tbody = document.querySelector("#allTable tbody");
+            tbody.innerHTML = "";
+            logs.forEach(log => {
+                const row = `<tr>
+                    <td>${log.plantName || 'N/A'}</td>
+                    <td>${log.careDate}</td>
+                    <td>${log.notes || ''}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        loadTodayLogs();
+        loadAllLogs();
+    </script>
+
+</body>
+</html>

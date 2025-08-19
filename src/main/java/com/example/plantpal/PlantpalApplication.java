@@ -1,4 +1,4 @@
-package com.example.zidio;
+package com.example.plantpal;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @SpringBootApplication
-public class ZidioApplication {
+public class PlantpalApplication {
 
 	@Value("${gmail.user}")
 	private String gmailUser;
@@ -19,7 +19,7 @@ public class ZidioApplication {
 	private String gmailPass;
 
 	public static void main(String[] args) {
-		SpringApplication.run(ZidioApplication.class, args);
+		SpringApplication.run(PlantpalApplication.class, args);
 	}
 
 	@Bean
@@ -42,6 +42,4 @@ public class ZidioApplication {
 
 		return mailSender;
 	}
-
 }
-
