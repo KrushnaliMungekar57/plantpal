@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      display: block;
+      margin: 10px 0;
+      padding: 8px;
+      width: 100%;
+    }
+    button {
+      padding: 10px;
+      width: 100%;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <form id="loginForm">
+      <input type="password" id="password" placeholder="Enter Admin Password" required />
+      <button type="submit">Login</button>
+      <div class="error" id="errorMsg"></div>
+    </form>
+  </div>
+
+  <!-- ✅ Place your script HERE -->
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('http://localhost:8080/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await res.json();
+        console.log("Server response:", data);
+
+        if (data.authenticated) {
+          localStorage.setItem('adminAuthenticated', 'true');
+          window.location.href = 'applications.html'; // ✅ redirect target
+        } else {
+          document.getElementById('errorMsg').textContent = 'Incorrect password.';
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        document.getElementById('errorMsg').textContent = 'Failed to connect to server.';
+      }
+    });
+  </script>
+
+</body>
+</html>

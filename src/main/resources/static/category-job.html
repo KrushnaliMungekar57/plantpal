@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs by Category</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        .job-card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Page Header -->
+<div class="container-fluid bg-primary py-5 mb-5 page-header">
+    <div class="container py-5">
+        <h1 id="page-title" class="display-3 text-white mb-3">Jobs</h1>
+    </div>
+</div>
+
+<!-- Job Listings -->
+<div class="container py-5">
+    <div id="loading" class="text-center mb-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <div class="row" id="job-list">
+        <!-- Jobs will be loaded here -->
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-4">
+    &copy; 2025 Job Portal. All rights reserved.
+</footer>
+
+<!-- Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+
+        const jobListContainer = document.getElementById('job-list');
+        const loading = document.getElementById('loading');
+        const pageTitle = document.getElementById('page-title');
+
+        if (!category) {
+            pageTitle.innerText = "Category not found!";
+            jobListContainer.innerHTML = `
+                <div class="col-12 text-center">
+                    <p>No category selected.</p>
+                    <a href="index.html" class="btn btn-primary mt-2">Go Back to Home</a>
+                </div>`;
+            return;
+        }
+
+        pageTitle.innerText = `${category} Jobs`;
+        loading.style.display = 'block';
+
+       fetch(`http://localhost:8080/api/jobs/category?category=${encodeURIComponent(category)}`)
+    .then(response => response.json())
+    .then(data => {
+        loading.style.display = 'none';
+        jobListContainer.innerHTML = '';
+
+        if (!Array.isArray(data.jobs) || data.jobs.length === 0) {
+            jobListContainer.innerHTML = `
+                <div class="col-12 text-center">
+                    <p>No jobs found for this category.</p>
+                    <a href="index.html" class="btn btn-primary mt-2">Go Back to Home</a>
+                </div>`;
+            return;
+        }
+
+        data.jobs.forEach(job => {
+            const jobCard = document.createElement('div');
+            jobCard.className = 'col-md-6';
+            jobCard.innerHTML = `
+                <div class="job-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5>${job.title}</h5>
+                        <p class="mb-1"><i class="fa fa-map-marker-alt text-primary"></i> ${job.location}</p>
+                        <p class="mb-1"><i class="fa fa-clock text-primary"></i> ${job.type}</p>
+                        <p>${job.description}</p>
+                    </div>
+                    <a href="job-detail.html?id=${job.id}" class="btn btn-outline-primary mt-3">View Details</a>
+                </div>
+            `;
+            jobListContainer.appendChild(jobCard);
+        });
+    })
+
+            .catch(error => {
+                loading.style.display = 'none';
+                console.error('Error fetching jobs:', error);
+                jobListContainer.innerHTML = `
+                    <div class="col-12 text-center text-danger">
+                        <p>Failed to load jobs. Please try again later.</p>
+                        <a href="index.html" class="btn btn-primary mt-2">Go Back to Home</a>
+                    </div>`;
+            });
+    });
+</script>
+</body>
+
+</html>

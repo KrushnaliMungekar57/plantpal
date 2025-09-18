@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Applications</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    #logoutBtn {
+      float: right;
+      padding: 8px 16px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="logoutBtn">Logout</button>
+  <h2>Submitted Applications</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Job ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Resume</th>
+      </tr>
+    </thead>
+    <tbody id="applicationsTableBody"></tbody>
+  </table>
+
+  <script>
+    // Fetch applications
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/applications');
+        const applications = await res.json();
+
+        const tbody = document.getElementById('applicationsTableBody');
+        applications.forEach(app => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${app.id}</td>
+            <td>${app.jobId}</td>
+            <td>${app.name}</td>
+            <td>${app.email}</td>
+            <td>${app.resume}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Failed to fetch applications:', err);
+        document.body.innerHTML += '<p style="color: red;">Failed to load applications.</p>';
+      }
+    });
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('adminAuthenticated');
+      window.location.href = 'index.html';
+    });
+  </script>
+
+</body>
+</html>

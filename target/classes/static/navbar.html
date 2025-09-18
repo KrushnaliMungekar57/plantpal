@@ -1,0 +1,21 @@
+<script>
+  document.getElementById('adminLoginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const password = document.getElementById('adminPassword').value;
+
+    if (password === 'admin123') {
+      localStorage.setItem('adminAuthenticated', 'true');
+
+      const params = new URLSearchParams(window.location.search);
+      const redirectURL = params.get('redirect');
+
+      if (redirectURL) {
+        window.location.href = redirectURL;
+      } else {
+        window.location.href = 'admin.html';
+      }
+    } else {
+      alert('Invalid password');
+    }
+  });
+</script>

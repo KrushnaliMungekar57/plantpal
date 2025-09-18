@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Apply for Job</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input,
+    textarea {
+      width: 300px;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Popup Style */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #d4edda;
+      color: #155724;
+      padding: 15px 20px;
+      border: 1px solid #c3e6cb;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+
+    #popup button {
+      background: none;
+      border: none;
+      color: #155724;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h2 id="job-heading">Apply for Job</h2>
+
+  <form id="applicationForm">
+    <input type="hidden" name="job_id" id="job-id-field" value="" />
+
+    <label for="name">Name:</label><br />
+    <input type="text" id="name" name="name" required /><br />
+
+    <label for="email">Email:</label><br />
+    <input type="email" id="email" name="email" required /><br />
+
+    <label for="resume">Resume (text):</label><br />
+    <textarea id="resume" name="resume" rows="6" required></textarea><br />
+
+    <button type="submit">Submit Application</button>
+  </form>
+
+  <!-- Popup for Success Message -->
+  <div id="popup">
+    ✅ Application submitted successfully!
+    <button onclick="closePopup()">✖</button>
+  </div>
+
+  <script>
+    const form = document.getElementById("applicationForm");
+
+    // Get jobId from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const jobId = urlParams.get("jobId");
+
+    if (!jobId) {
+      document.getElementById("job-heading").innerText = "❌ No Job ID in URL!";
+    } else {
+      document.getElementById("job-id-field").value = jobId;
+
+      fetch(`http://localhost:8080/api/jobs/${jobId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Job not found");
+          return res.json();
+        })
+        .then(job => {
+          document.getElementById("job-heading").innerText = `Apply for: ${job.title}`;
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById("job-heading").innerText = "⚠️ Could not load job details.";
+        });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch("http://localhost:8080/api/apply", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          showPopup();
+          form.reset();
+        } else {
+          alert("❌ Failed to submit application.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Could not connect to server.");
+      }
+    });
+
+    function showPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "block";
+      popup.style.opacity = "1";
+
+      setTimeout(() => {
+        closePopup();
+      }, 5000); // Auto close after 5 seconds
+    }
+
+    function closePopup() {
+      const popup = document.getElementById("popup");
+      popup.style.opacity = "0";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 300);
+    }
+  </script>
+</body>
+
+</html>
