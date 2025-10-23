@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -7,7 +8,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Node.js
 node_modules
 dist
 dist-ssr
@@ -23,14 +23,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Spring/Gradle/Java
+=======
 HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
 
 ### STS ###
 .apt_generated
@@ -45,6 +45,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+.idea
 *.iws
 *.iml
 *.ipr
@@ -61,3 +62,4 @@ out/
 
 ### VS Code ###
 .vscode/
+>>>>>>> 0eda6031e7129529382e8bc9f2e39153afc45de5
