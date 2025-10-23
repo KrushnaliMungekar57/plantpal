@@ -2,63 +2,63 @@ pipeline {
     agent any
 
     tools {
-        maven "Maven_Home"
-        jdk 'JDK17'
+        jdk 'JDK17'           // Name of your installed JDK in Jenkins
+        maven 'Maven_Home'    // Name of your installed Maven in Jenkins
     }
 
     stages {
-
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
+                echo "Checking out source code..."
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building project...'
-                sh 'mvn clean compile'
+                echo "Building project..."
+                bat "mvn clean compile"
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'mvn test'
+                echo "Running tests..."
+                bat "mvn test"
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    junit '**/target/surefire-reports/TEST-*.xml'
                 }
             }
         }
 
         stage('Package') {
             steps {
-                echo 'Packaging the application...'
-                sh 'mvn package'
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                echo "Packaging project..."
+                bat "mvn package"
+            }
+            post {
+                success {
+                    archiveArtifacts 'target/*.jar'
+                }
             }
         }
 
         stage('Deploy') {
-            when {
-                branch 'main'
-            }
             steps {
-                echo 'Deploying application...'
-                sh 'mvn deploy'
+                echo "Deploying project..."
+                // Add your deployment steps here (copy files, upload to server, etc.)
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build completed successfully!'
+            echo "Build and pipeline completed successfully!"
         }
         failure {
-            echo '❌ Build failed. Check logs for details.'
+            echo "Build or pipeline failed. Check logs."
         }
     }
 }
